@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import ImportExport from '../components/ImportExport';
+import AddCourse from '../components/AddCourse';
 
 function Admin() {
     const navigate = useNavigate();
@@ -20,6 +21,8 @@ function Admin() {
                 </div>
                 {/* <นำเข้า-ส่งออก ข้อมูล /> */}
                 <ImportExport />
+                {/* <เพิ่มวิชา /> */}
+                <AddCourse />
                 <div className="flex flex-row items-center justify-center bg-gray-200 px-6 py-4 rounded-b-lg">
                     <p className="text-gray-500 text-center">
                         มหาวิทยาลัย...

@@ -1,0 +1,25 @@
+export const score = [{
+    id: 1,
+    course: 'CS101',
+    subject: 'หลักการเขียนโปรแกรมคอมพิวเตอร์',
+    midterm: 80,
+    final: 80,
+    status: 'ผ่าน',
+},
+{
+    id: 2,
+    course: 'CS102',
+    subject: 'คณิตศาสตร์',
+    midterm: 80,
+    final: 80,
+    status: 'ผ่าน',
+},
+{
+    id: 3,
+    course: 'CS103',
+    subject: 'ฟิสิกส์',
+    midterm: 80,
+    final: 80,
+    status: 'ผ่าน',
+},
+]

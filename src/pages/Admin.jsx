@@ -51,7 +51,7 @@ function Admin() {
           {/* Footer */}
           <div className="flex flex-row items-center justify-center bg-gray-200 px-6 py-4 rounded-b-lg">
             <p className="text-gray-500 text-center">
-              มหาวิทยาลัยกรุงเทพมหานคร
+              มหาวิทยาลัย...
             </p>
           </div>
         </div>

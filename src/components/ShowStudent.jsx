@@ -7,11 +7,12 @@ function ShowStudent({student}) {
           <h2 className="text-lg font-semibold text-gray-800 mb-4 text-center">
             แสดงชื่อนักเรียน
           </h2>
-          <p className="text-gray-500 text-center">รหัส: {student.code}</p>
+          <p className="text-gray-500 text-center">Student ID : {student.code}</p>
           <p className="text-gray-500 text-center">
-            ชื่อนักเรียน: {student.name}
+            Name : {student.name}
           </p>
-          <p className="text-gray-500 text-center">ชั้นปี: {student.class}</p>
+          <p className="text-gray-500 text-center">Class : {student.class}</p>
+          <p className="text-gray-500 text-center">Subject : {student.course}</p>
         </div>
       </div>
       ))}

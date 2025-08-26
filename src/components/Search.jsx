@@ -6,12 +6,18 @@ import { useNavigate } from 'react-router-dom';
 
 function Search() {
   const [search, setSearch] = useState('');
-  const [isopen, setIsopen] = useState(false);
+  const [foundStudent, setFoundStudent] = useState(null);
 
   const navigate = useNavigate();
 
   const handleSearch = () => {
-    setIsopen(!isopen);
+    // หา student ที่เลขบัตรตรงกับที่กรอก
+    const student = students.find((s) => s.code === search.trim());
+    if (student) {
+      setFoundStudent(student);
+    } else {
+      setFoundStudent('notfound');
+    }
   };
 
   return (
@@ -59,8 +65,18 @@ function Search() {
           </div>
         </div>
 
-        {isopen && <ShowStudent student={students} />}
-        {isopen && <TableScore />}
+        {/* แสดงผลตามที่ค้นเจอ */}
+        {foundStudent && foundStudent !== 'notfound' && (
+          <>
+            <ShowStudent student={[foundStudent]} />
+            <TableScore student={[foundStudent]} />
+          </>
+        )}
+        {foundStudent === 'notfound' && (
+          <div className="text-center text-red-500 font-bold mb-6">
+            ไม่พบนักเรียนในระบบ
+          </div>
+        )}
 
         {/* Footer */}
         <div className="flex flex-row items-center justify-center bg-gray-200 px-6 py-4 rounded-b-lg">

@@ -11,10 +11,10 @@ function Search() {
   const navigate = useNavigate();
 
   const handleSearch = () => {
-    // หา student ที่เลขบัตรตรงกับที่กรอก
-    const student = students.find((s) => s.code === search.trim());
-    if (student) {
-      setFoundStudent(student);
+    // หา student ที่เลขบัตรตรงกับที่กรอก (หาได้หลายคน)
+    const foundStudents = students.filter((s) => s.code === search.trim());
+    if (foundStudents.length > 0) {
+      setFoundStudent(foundStudents);
     } else {
       setFoundStudent('notfound');
     }
@@ -68,13 +68,13 @@ function Search() {
         {/* แสดงผลตามที่ค้นเจอ */}
         {foundStudent && foundStudent !== 'notfound' && (
           <>
-            <ShowStudent student={[foundStudent]} />
-            <TableScore student={[foundStudent]} />
+            <ShowStudent student={foundStudent} />
+            <TableScore student={foundStudent} />
           </>
         )}
         {foundStudent === 'notfound' && (
           <div className="text-center text-red-500 font-bold mb-6">
-            ไม่พบนักเรียนในระบบ
+            ไม่พบรหัสนักศึกษาในระบบ กรุณาตรวจสอบรหัสนักศึกษา
           </div>
         )}
 

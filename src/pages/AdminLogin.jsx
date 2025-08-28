@@ -1,7 +1,23 @@
 import { useNavigate } from "react-router-dom";
+import { admin } from "../data/admin";
+import { useState } from "react";
 
 function AdminLogin() {
   const navigate = useNavigate();
+
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+
+  const handleLogin = () => {
+    // หา student ที่เลขบัตรตรงกับที่กรอก
+    const foundAdmin = admin.find((a) => a.username === username && a.password === password);
+    if (foundAdmin) {
+      navigate("/admin");
+    } else {
+      setError("Username or password is incorrect");
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col justify-center items-center bg-gray-50">
@@ -33,8 +49,10 @@ function AdminLogin() {
                   </label>
                   <input
                     type="text"
+                    value={username}
                     placeholder="Username"
                     className="w-full border-2 border-gray-300 rounded-md p-3 focus:border-blue-500 focus:outline-none transition-colors"
+                    onChange={(e) => setUsername(e.target.value)}
                   />
                 </div>
                 <div>
@@ -43,12 +61,15 @@ function AdminLogin() {
                   </label>
                   <input
                     type="password"
+                    value={password}
                     placeholder="Password"
                     className="w-full border-2 border-gray-300 rounded-md p-3 focus:border-blue-500 focus:outline-none transition-colors"
+                    onChange={(e) => setPassword(e.target.value)}
                   />
+                  {error && <p className="text-red-500 text-sm">{error}</p>}
                 </div>
                 <button className="w-full bg-[#4a90e2] text-white py-3 px-4 rounded-md hover:bg-blue-600 transition-colors font-medium"
-                onClick={() => navigate("/admin")}
+                onClick={handleLogin}
                 >
                   Login
                 </button>

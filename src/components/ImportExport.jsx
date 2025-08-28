@@ -21,7 +21,7 @@ function ImportExport() {
                                 <button className="w-full bg-[#4a90e2] text-white py-3 px-4 rounded-md hover:bg-blue-600 transition-colors font-medium">
                                     Export Template
                                 </button>
-                                <button className="w-full flex justify-evenly bg-white border rounded-md border-gray-300 text-gray-500 py-3 px-4 hover:bg-gray-100 transition-colors font-medium">
+                                <button className="w-full flex justify-evenly bg-white border border-dashed border-2 rounded-md border-gray-300 text-gray-500 py-3 px-4 hover:bg-gray-100 transition-colors font-medium">
                                     <span className="font-bold text-center bg-gray-200 rounded-md text-blue-500 w-1/3">
                                         เลือกไฟล์
                                         </span>

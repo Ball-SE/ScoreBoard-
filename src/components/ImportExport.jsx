@@ -1,4 +1,52 @@
+import React, { useState, useRef } from 'react';
+
 function ImportExport() {
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [fileName, setFileName] = useState('ไม่ได้เลือกไฟล์');
+  const fileInputRef = useRef(null);
+
+  const handleFileSelect = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setSelectedFile(file);
+      setFileName(file.name);
+    }
+  };
+
+  const handleExportTemplate = () => {
+    // Create CSV template content
+    const templateContent = 'ชื่อ,นามสกุล,รหัสนักเรียน,ชั้น,ห้อง,วิชา,คะแนน\n';
+    const blob = new Blob([templateContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', 'student_template.csv');
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const handleImport = () => {
+    if (!selectedFile) {
+      alert('กรุณาเลือกไฟล์ก่อน');
+      return;
+    }
+    
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const csvContent = e.target.result;
+      // Here you would process the CSV content
+      console.log('CSV Content:', csvContent);
+      alert('นำเข้าข้อมูลสำเร็จ');
+    };
+    reader.readAsText(selectedFile);
+  };
+
+  const handleFileButtonClick = () => {
+    fileInputRef.current.click();
+  };
+
   return (
     <div className="flex flex-col justify-center items-center p-6">
       <div className="w-full ">
@@ -27,16 +75,32 @@ function ImportExport() {
               </li>
             </ol>
             <div className="flex flex-row gap-4 mt-4">
-              <button className="w-full bg-[#4a90e2] text-white py-3 px-4 rounded-md hover:bg-blue-600 transition-colors font-medium">
+              <button 
+                onClick={handleExportTemplate}
+                className="w-full bg-[#4a90e2] text-white py-3 px-4 rounded-md hover:bg-blue-600 transition-colors font-medium"
+              >
                 Export Template
               </button>
-              <button className="w-full flex justify-evenly bg-white border border-dashed border-2 rounded-md border-gray-300 text-gray-500 py-3 px-4 hover:bg-gray-100 transition-colors font-medium">
+              <button 
+                onClick={handleFileButtonClick}
+                className="w-full flex justify-evenly bg-white border-2 border-dashed rounded-md border-gray-300 text-gray-500 py-3 px-4 hover:bg-gray-100 transition-colors font-medium"
+              >
                 <span className="font-bold text-center bg-gray-200 rounded-md text-blue-500 w-1/3">
                   เลือกไฟล์
                 </span>
-                <span className="text-center">ไม่ได้เลือกไฟล์</span>
+                <span className="text-center">{fileName}</span>
               </button>
-              <button className="w-full bg-green-500 text-white py-3 px-4 rounded-md hover:bg-green-600 transition-colors font-medium">
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".csv"
+                onChange={handleFileSelect}
+                style={{ display: 'none' }}
+              />
+              <button 
+                onClick={handleImport}
+                className="w-full bg-green-500 text-white py-3 px-4 rounded-md hover:bg-green-600 transition-colors font-medium"
+              >
                 Import
               </button>
             </div>

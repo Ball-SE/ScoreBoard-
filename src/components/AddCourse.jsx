@@ -1,8 +1,101 @@
+import { useState } from "react";
+
 function AddCourse() {
+  const [code, setCode] = useState("");
+  const [name, setName] = useState("");
+  const [classLevel, setClassLevel] = useState("");
+  const [course, setCourse] = useState("");
+  const [listening, setListening] = useState("");
+  const [reading, setReading] = useState("");
+  const [writing, setWriting] = useState("");
+  const [total, setTotal] = useState("");
+  const [passingScore, setPassingScore] = useState("");
+  const [testLevel, setTestLevel] = useState("");
+  const [testCalendar, setTestCalendar] = useState("");
+  const [notes, setNotes] = useState("");
+  const [savedBy, setSavedBy] = useState("");
+  const [status, setStatus] = useState("");
+  const [error, setError] = useState({})
+
+  const handleAddCourse = (e) => {
+    e.preventDefault();
+
+    if (validateForm()) {
+      return;
+    }
+
+    let newCourse = {
+      code: code.trim(),
+      name: name.trim(),
+      classLevel: classLevel.trim(),
+      course: course.trim(),
+      listening: listening.trim(),
+      reading: reading.trim(),
+      writing: writing.trim(),
+      total: total.trim(),
+      passingScore: passingScore.trim(),
+      testLevel: testLevel.trim(),
+      testCalendar: testCalendar.trim(),
+      notes: notes.trim(),
+      savedBy: savedBy.trim(),
+      status: status.trim(),
+    }
+
+    alert(JSON.stringify(newCourse,null,2));
+  }
+
+  function validateForm() {
+    let newerrors = {};
+
+    if (!code) {
+      newerrors.code = "กรุณากรอกรหัสนักศึกษา";
+    }
+    if (!name) {
+      newerrors.name = "กรุณากรอกชื่อนักศึกษา";
+    }
+    if (!classLevel) {
+      newerrors.classLevel = "กรุณากรอกระดับชั้น";
+    }
+    if (!course) {
+      newerrors.course = "กรุณากรอกรายวิชา";
+    }
+    if (!listening) {
+      newerrors.listening = "กรุณากรอกคะแนน Listening";
+    }
+    if (!reading) {
+      newerrors.reading = "กรุณากรอกคะแนน Reading";
+    }
+    if (!writing) {
+      newerrors.writing = "กรุณากรอกคะแนน Writing";
+    }
+    if (!total) {
+      newerrors.total = "กรุณากรอกคะแนน Total";
+    }
+    if (!passingScore) {
+      newerrors.passingScore = "กรุณากรอกคะแนน Passing Score";
+    }
+    if (!testLevel) {
+      newerrors.testLevel = "กรุณากรอก test level";
+    }
+    if (!testCalendar) {
+      newerrors.testCalendar = "กรุณากรอกวันที่สอบ";
+    }
+    if (!notes) {
+      newerrors.notes = "กรุณากรอกหมายเหตุ";
+    }
+    if (!savedBy) {
+      newerrors.savedBy = "กรุณากรอกชื่อผู้บันทึก";
+    }
+    if (!status) {
+      newerrors.status = "กรุณากรอกสถานะ";
+    }
+    setError(newerrors);
+    return Object.keys(newerrors).length > 0;
+  }
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center items-center p-6">
       <div className="w-full max-w-4xl">
-        <div className="bg-white rounded-xl shadow-lg p-8 w-full">
+        <form className="bg-white rounded-xl shadow-lg p-8 w-full" onSubmit={handleAddCourse}>
           {/* Header */}
           <div className="text-center mb-8">
             <h2 className="text-2xl font-bold text-gray-800 mb-2">
@@ -17,22 +110,45 @@ function AddCourse() {
               <span className="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
               ข้อมูลนักเรียน
             </h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <input
-                type="text"
-                placeholder="รหัสประจำตัวประชาชน"
-                className="w-full border-2 border-gray-200 rounded-lg p-4 focus:border-blue-500 focus:outline-none transition-all duration-200 hover:border-gray-300"
-              />
-              <input
-                type="text"
-                placeholder="ชื่อ-นามสกุล"
-                className="w-full border-2 border-gray-200 rounded-lg p-4 focus:border-blue-500 focus:outline-none transition-all duration-200 hover:border-gray-300"
-              />
-              <input
-                type="text"
-                placeholder="ระดับชั้น"
-                className="w-full border-2 border-gray-200 rounded-lg p-4 focus:border-blue-500 focus:outline-none transition-all duration-200 hover:border-gray-300"
-              />
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  รหัสประจำตัวประชาชน
+                </label>
+                <input
+                  type="text"
+                  placeholder="กรอกรหัสประจำตัวประชาชน"
+                  className="w-full border-2 border-gray-200 rounded-lg p-4 focus:border-blue-500 focus:outline-none transition-all duration-200 hover:border-gray-300"
+                  onChange={(e) => setCode(e.target.value)}
+                />
+                {error.code && <p className="text-red-500 text-sm mt-1">{error.code}</p>}
+              </div>
+              
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  ชื่อ-นามสกุล
+                </label>
+                <input
+                  type="text"
+                  placeholder="กรอกชื่อ-นามสกุล"
+                  className="w-full border-2 border-gray-200 rounded-lg p-4 focus:border-blue-500 focus:outline-none transition-all duration-200 hover:border-gray-300"
+                  onChange={(e) => setName(e.target.value)}
+                />
+                {error.name && <p className="text-red-500 text-sm mt-1">{error.name}</p>}
+              </div>
+              
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  ระดับชั้น
+                </label>
+                <input
+                  type="text"
+                  placeholder="กรอกระดับชั้น"
+                  className="w-full border-2 border-gray-200 rounded-lg p-4 focus:border-blue-500 focus:outline-none transition-all duration-200 hover:border-gray-300"
+                  onChange={(e) => setClassLevel(e.target.value)}
+                />
+                {error.classLevel && <p className="text-red-500 text-sm mt-1">{error.classLevel}</p>}
+              </div>
             </div>
           </div>
 
@@ -42,11 +158,18 @@ function AddCourse() {
               <span className="w-2 h-2 bg-green-500 rounded-full mr-3"></span>
               ข้อมูลรายวิชา
             </h3>
-            <input
-              type="text"
-              placeholder="รายวิชา"
-              className="w-full border-2 border-gray-200 rounded-lg p-4 focus:border-blue-500 focus:outline-none transition-all duration-200 hover:border-gray-300"
-            />
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                รายวิชา
+              </label>
+              <input
+                type="text"
+                placeholder="กรอกรายวิชา"
+                className="w-full border-2 border-gray-200 rounded-lg p-4 focus:border-blue-500 focus:outline-none transition-all duration-200 hover:border-gray-300"
+                onChange={(e) => setCourse(e.target.value)}
+              />
+              {error.course && <p className="text-red-500 text-sm mt-1">{error.course}</p>}
+            </div>
           </div>
 
           {/* Score Section */}
@@ -65,74 +188,71 @@ function AddCourse() {
                   </label>
                   <input
                     type="text"
-                    placeholder="คะแนนที่ได้"
-                    className="flex-1 border-2 border-gray-200 rounded-lg p-3 focus:border-blue-500 focus:outline-none transition-all duration-200 hover:border-gray-300"
+                    placeholder="กรอกคะแนน Listening"
+                    className="flex-1 border-2 bg-white border-gray-200 rounded-lg p-3 focus:border-blue-500 focus:outline-none transition-all duration-200 hover:border-gray-300"
+                    onChange={(e) => setListening(e.target.value)}
                   />
+                  {error.listening && <p className="text-red-500 text-sm mt-1">{error.listening}</p>}
                 </div>
 
                 {/* Reading (100) */}
                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
                   <label className="text-gray-700 font-medium min-w-[140px] flex items-center">
-                    <span className="w-3 h-3 bg-blue-400 rounded-full mr-2"></span>
+                    <span className="w-3 h-3 bg-green-400 rounded-full mr-2"></span>
                     Reading (100)
                   </label>
                   <input
                     type="text"
-                    placeholder="คะแนนที่ได้"
-                    className="flex-1 border-2 border-gray-200 rounded-lg p-3 focus:border-blue-500 focus:outline-none transition-all duration-200 hover:border-gray-300"
+                    placeholder="กรอกคะแนน Reading"
+                    className="flex-1 border-2 bg-white border-gray-200 rounded-lg p-3 focus:border-blue-500 focus:outline-none transition-all duration-200 hover:border-gray-300"
+                    onChange={(e) => setReading(e.target.value)}
                   />
+                  {error.reading && <p className="text-red-500 text-sm mt-1">{error.reading}</p>}
                 </div>
 
                 {/* Writing (100) */}
                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
                   <label className="text-gray-700 font-medium min-w-[140px] flex items-center">
-                    <span className="w-3 h-3 bg-blue-400 rounded-full mr-2"></span>
+                    <span className="w-3 h-3 bg-purple-400 rounded-full mr-2"></span>
                     Writing (100)
                   </label>
                   <input
                     type="text"
-                    placeholder="คะแนนที่ได้"
-                    className="flex-1 border-2 border-gray-200 rounded-lg p-3 focus:border-blue-500 focus:outline-none transition-all duration-200 hover:border-gray-300"
+                    placeholder="กรอกคะแนน Writing"
+                    className="flex-1 border-2 bg-white border-gray-200 rounded-lg p-3 focus:border-blue-500 focus:outline-none transition-all duration-200 hover:border-gray-300"
+                    onChange={(e) => setWriting(e.target.value)}
                   />
+                  {error.writing && <p className="text-red-500 text-sm mt-1">{error.writing}</p>}
                 </div>
 
                 {/* Total (300) */}
                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
                   <label className="text-gray-700 font-medium min-w-[140px] flex items-center">
-                    <span className="w-3 h-3 bg-blue-400 rounded-full mr-2"></span>
-                    Writing (100)
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="คะแนนที่ได้"
-                    className="flex-1 border-2 border-gray-200 rounded-lg p-3 focus:border-blue-500 focus:outline-none transition-all duration-200 hover:border-gray-300"
-                  />
-                </div>
-
-                {/* Total (300) */}
-                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                  <label className="text-gray-700 font-medium min-w-[140px] flex items-center">
-                    <span className="w-3 h-3 bg-blue-400 rounded-full mr-2"></span>
+                    <span className="w-3 h-3 bg-orange-400 rounded-full mr-2"></span>
                     Total (300)
                   </label>
                   <input
                     type="text"
-                    placeholder="คะแนนที่ได้"
-                    className="flex-1 border-2 border-gray-200 rounded-lg p-3 focus:border-blue-500 focus:outline-none transition-all duration-200 hover:border-gray-300"
+                    placeholder="กรอกคะแนนรวม"
+                    className="flex-1 border-2 bg-white border-gray-200 rounded-lg p-3 focus:border-blue-500 focus:outline-none transition-all duration-200 hover:border-gray-300"
+                    onChange={(e) => setTotal(e.target.value)}
                   />
+                  {error.total && <p className="text-red-500 text-sm mt-1">{error.total}</p>}
                 </div>
 
-                {/* Passing Status Passing Score (180) */}
+                {/* Passing Score (180) */}
                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
                   <label className="text-gray-700 font-medium min-w-[140px] flex items-center">
-                    <span className="w-3 h-3 bg-blue-400 rounded-full mr-2"></span>
-                    Passing Status Passing Score (180)
+                    <span className="w-3 h-3 bg-red-400 rounded-full mr-2"></span>
+                    Passing Score (180)
                   </label>
                   <input
                     type="text"
-                    placeholder="คะแนนที่ได้"
-                    className="flex-1 border-2 border-gray-200 rounded-lg p-3 focus:border-blue-500 focus:outline-none transition-all duration-200 hover:border-gray-300"
+                    placeholder="กรอกคะแนนผ่าน"
+                    className="flex-1 border-2 bg-white border-gray-200 rounded-lg p-3 focus:border-blue-500 focus:outline-none transition-all duration-200 hover:border-gray-300"
+                    onChange={(e) => setPassingScore(e.target.value)}
                   />
+                  {error.passingScore && <p className="text-red-500 text-sm mt-1">{error.passingScore}</p>}
                 </div>
 
                 {/* Test Level */}
@@ -143,9 +263,11 @@ function AddCourse() {
                   </label>
                   <input
                     type="text"
-                    placeholder="คะแนนที่ได้"
-                    className="flex-1 border-2 border-gray-200 rounded-lg p-3 focus:border-blue-500 focus:outline-none transition-all duration-200 hover:border-gray-300"
+                    placeholder="Input Text"
+                    className="flex-1 border-2 bg-white border-gray-200 rounded-lg p-3 focus:border-blue-500 focus:outline-none transition-all duration-200 hover:border-gray-300"
+                    onChange={(e) => setTestLevel(e.target.value)}
                   />
+                  {error.testLevel && <p className="text-red-500 text-sm">{error.testLevel}</p>}
                 </div>
 
                 {/* Test Calendar */}
@@ -155,10 +277,12 @@ function AddCourse() {
                     Test Calendar
                   </label>
                   <input
-                    type="text"
+                    type="date"
                     placeholder="วัน/เดือน/ปี"
-                    className="flex-1 border-2 border-gray-200 rounded-lg p-3 focus:border-blue-500 focus:outline-none transition-all duration-200 hover:border-gray-300"
+                    className="flex-1 border-2 bg-white border-gray-200 rounded-lg p-3 focus:border-blue-500 focus:outline-none transition-all duration-200 hover:border-gray-300"
+                    onChange={(e) => setTestCalendar(e.target.value)}
                   />
+                  {error.testCalendar && <p className="text-red-500 text-sm">{error.testCalendar}</p>}
                 </div>
 
                 {/* Notes */}
@@ -170,8 +294,10 @@ function AddCourse() {
                   <input
                     type="text"
                     placeholder="Input Text"
-                    className="flex-1 border-2 border-gray-200 rounded-lg p-3 focus:border-blue-500 focus:outline-none transition-all duration-200 hover:border-gray-300"
+                    className="flex-1 border-2 bg-white border-gray-200 rounded-lg p-3 focus:border-blue-500 focus:outline-none transition-all duration-200 hover:border-gray-300"
+                    onChange={(e) => setNotes(e.target.value)}
                   />
+                  {error.notes && <p className="text-red-500 text-sm">{error.notes}</p>}
                 </div>
 
                 {/* Saved By */}
@@ -183,8 +309,10 @@ function AddCourse() {
                   <input
                     type="text"
                     placeholder="Input Text"
-                    className="flex-1 border-2 border-gray-200 rounded-lg p-3 focus:border-blue-500 focus:outline-none transition-all duration-200 hover:border-gray-300"
+                    className="flex-1 border-2 bg-white border-gray-200 rounded-lg p-3 focus:border-blue-500 focus:outline-none transition-all duration-200 hover:border-gray-300"
+                    onChange={(e) => setSavedBy(e.target.value)}
                   />
+                  {error.savedBy && <p className="text-red-500 text-sm">{error.savedBy}</p>}
                 </div>
 
                 {/* Status */}
@@ -196,8 +324,10 @@ function AddCourse() {
                   <input
                     type="text"
                     placeholder="ผ่าน/ไม่ผ่าน"
-                    className="flex-1 border-2 border-gray-200 rounded-lg p-3 focus:border-blue-500 focus:outline-none transition-all duration-200 hover:border-gray-300"
+                    className="flex-1 border-2 bg-white border-gray-200 rounded-lg p-3 focus:border-blue-500 focus:outline-none transition-all duration-200 hover:border-gray-300"
+                    onChange={(e) => setStatus(e.target.value)}
                   />
+                  {error.status && <p className="text-red-500 text-sm">{error.status}</p>}
                 </div>
               </div>
             </div>
@@ -205,11 +335,11 @@ function AddCourse() {
 
           {/* Submit Button */}
           <div className="text-center">
-            <button className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white py-4 px-6 rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 font-semibold text-lg shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
-              เพิ่มวิชา
+            <button className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white py-4 px-6 rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 font-semibold text-lg shadow-md hover:shadow-lg transform hover:-translate-y-0.5" >
+              เพิ่มคะแนน
             </button>
           </div>
-        </div>
+        </form>
       </div>
     </div>
   );

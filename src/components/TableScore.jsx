@@ -11,46 +11,46 @@ function TableScore({student}) {
 
           {/* Table */}
           <div className="overflow-x-auto">
-            <table className="w-full bg-white rounded-lg overflow-hidden shadow-lg">
-              <thead className="bg-gradient-to-r from-gray-800 to-gray-900 text-white">
+            <table className="w-full bg-white rounded-lg overflow-hidden shadow-lg text-center">
+              <thead className="bg-gradient-to-r from-gray-800 to-gray-900 text-white ">
                 <tr>
-                  <th className="px-6 py-4 text-left font-semibold text-sm uppercase tracking-wider">
+                  <th className="px-6 py-4 font-semibold text-sm uppercase tracking-wider">
                     NO. 
                   </th>
-                  <th className="px-6 py-4 text-left font-semibold text-sm uppercase tracking-wider">
+                  <th className="px-6 py-4 font-semibold text-sm uppercase tracking-wider">
                     Student ID 
                   </th>
-                  <th className="px-6 py-4 text-left font-semibold text-sm uppercase tracking-wider">
+                  <th className="px-6 py-4 font-semibold text-sm uppercase tracking-wider">
                     Name
                   </th>
-                  <th className="px-6 py-4 text-left font-semibold text-sm uppercase tracking-wider">
+                  <th className="px-6 py-4 font-semibold text-sm uppercase tracking-wider">
                     Listening (100)
                   </th>
-                  <th className="px-6 py-4 text-left font-semibold text-sm uppercase tracking-wider">
+                  <th className="px-6 py-4 font-semibold text-sm uppercase tracking-wider">
                     Reading (100)
                   </th>
-                  <th className="px-6 py-4 text-left font-semibold text-sm uppercase tracking-wider">
+                  <th className="px-6 py-4 font-semibold text-sm uppercase tracking-wider">
                     Writing (100)
                   </th>
-                  <th className="px-6 py-4 text-left font-semibold text-sm uppercase tracking-wider">
+                  <th className="px-6 py-4 font-semibold text-sm uppercase tracking-wider">
                     Total (300)
                   </th>
-                  <th className="px-6 py-4 text-left font-semibold text-sm uppercase tracking-wider">
-                    Passing Status Passing Score (180)
+                  <th className="px-6 py-4 font-semibold text-sm uppercase tracking-wider">
+                    Passing Score (180)
                   </th>
-                  <th className="px-6 py-4 text-left font-semibold text-sm uppercase tracking-wider">
+                  <th className="px-6 py-4 font-semibold text-sm uppercase tracking-wider">
                     Test Level
                   </th>
-                  <th className="px-6 py-4 text-left font-semibold text-sm uppercase tracking-wider">
+                  <th className="px-6 py-4 font-semibold text-sm uppercase tracking-wider">
                     Test Calendar
                   </th>
-                  <th className="px-6 py-4 text-left font-semibold text-sm uppercase tracking-wider">
+                  <th className="px-6 py-4 font-semibold text-sm uppercase tracking-wider">
                     Notes
                   </th>
-                  <th className="px-6 py-4 text-left font-semibold text-sm uppercase tracking-wider">
+                  <th className="px-6 py-4 font-semibold text-sm uppercase tracking-wider">
                     Saved By
                   </th>
-                  <th className="px-6 py-4 text-left font-semibold text-sm uppercase tracking-wider">
+                  <th className="px-6 py-4 font-semibold text-sm uppercase tracking-wider">
                     Status
                   </th>
                 </tr>
@@ -101,179 +101,6 @@ function TableScore({student}) {
                   </td>
                 </tr>
                 ))}
-                {/* // <tr className="hover:bg-gray-50 transition-colors duration-200">
-                //   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                //     2
-                //   </td>
-                //   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                //     1234567890125
-                //   </td>
-                //   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                //     นาย อัศวิน มาพูล
-                //   </td>
-                //   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                //     80
-                //   </td>
-                //   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                //     95
-                //   </td>
-                //   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                //     65
-                //   </td>
-                //   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                //     256
-                //   </td>
-                //   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                //     160
-                //   </td>
-                //   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                //     A
-                //   </td>
-                //   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                //     26/08/2025
-                //   </td>
-                //   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                //     -
-                //   </td>
-                //   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                //     Ball
-                //   </td>
-                //   <td className="px-6 py-4 whitespace-nowrap">
-                //     <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                //       ผ่าน
-                //     </span>
-                //   </td>
-                // </tr>
-                // <tr className="hover:bg-gray-50 transition-colors duration-200">
-                //   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                //     3
-                //   </td>
-                //   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                //     1234567890125
-                //   </td>
-                //   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                //     นาย อัศวิน มาพูล
-                //   </td>
-                //   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                //     80
-                //   </td>
-                //   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                //     95
-                //   </td>
-                //   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                //     65
-                //   </td>
-                //   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                //     256
-                //   </td>
-                //   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                //     160
-                //   </td>
-                //   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                //     A
-                //   </td>
-                //   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                //     26/08/2025
-                //   </td>
-                //   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                //     -
-                //   </td>
-                //   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                //     Ball
-                //   </td>
-                //   <td className="px-6 py-4 whitespace-nowrap">
-                //     <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                //       ผ่าน
-                //     </span>
-                //   </td>
-                // </tr>
-                // <tr className="hover:bg-gray-50 transition-colors duration-200">
-                //   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                //     4
-                //   </td>
-                //   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                //     1234567890125
-                //   </td>
-                //   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                //     นาย อัศวิน มาพูล
-                //   </td>
-                //   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                //     80
-                //   </td>
-                //   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                //     95
-                //   </td>
-                //   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                //     65
-                //   </td>
-                //   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                //     256
-                //   </td>
-                //   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                //     160
-                //   </td>
-                //   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                //     A
-                //   </td>
-                //   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                //     26/08/2025
-                //   </td>
-                //   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                //     -
-                //   </td>
-                //   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                //     Ball
-                //   </td>
-                //   <td className="px-6 py-4 whitespace-nowrap">
-                //     <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                //       ผ่าน
-                //     </span>
-                //   </td>
-                // </tr>
-                // <tr className="hover:bg-gray-50 transition-colors duration-200">
-                //   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                //     5
-                //   </td>
-                //   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                //     1234567890125
-                //   </td>
-                //   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                //     นาย อัศวิน มาพูล
-                //   </td>
-                //   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                //     80
-                //   </td>
-                //   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                //     95
-                //   </td>
-                //   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                //     65
-                //   </td>
-                //   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                //     256
-                //   </td>
-                //   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                //     160
-                //   </td>
-                //   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                //     A
-                //   </td>
-                //   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                //     26/08/2025
-                //   </td>
-                //   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                //     -
-                //   </td>
-                //   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                //     Ball
-                //   </td>
-                //   <td className="px-6 py-4 whitespace-nowrap">
-                //     <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                //       ผ่าน
-                //     </span>
-                //   </td>
-                // </tr>
-                // ))} */}
               </tbody>
             </table>
           </div>
@@ -281,7 +108,7 @@ function TableScore({student}) {
           {/* Table Footer */}
           <div className="mt-6 flex justify-between items-center text-sm text-gray-600">
             <div className="flex items-center space-x-4">
-              <span>แสดง 5 รายการ จาก 8 รายการ</span>
+              <span>แสดง 5 รายการ จาก 5 รายการ</span>
             </div>
             <div className="flex items-center space-x-2">
               <button className="px-3 py-1 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors">

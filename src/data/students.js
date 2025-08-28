@@ -1,64 +1,107 @@
-export const students = [{
+export const students = [
+  {
     id: 1,
-    code: '1234567890123',
-    name: 'นาย อัศวิน มาพูล',
-    class: '3',
-    course: 'chinese',
+    code: "1234567890123",
+    name: "นาย อัศวิน มาพูล",
+    class: "3",
+    course: "chinese",
     scores: [
-        {
-          listening: 80,
-          reading: 90,
-          writing: 70,
-          total: 240,
-          passing: 150,
-          testLevel: "A",
-          testCalendar: "26/08/2025",
-          notes: "-",
-          savedBy: "Ball",
-          status: "120"
-        }
-      ]
-},
-{
+      {
+        listening: 80,
+        reading: 90,
+        writing: 70,
+        total: 240,
+        passing: 150,
+        testLevel: "A",
+        testCalendar: "26/08/2025",
+        notes: "-",
+        savedBy: "Ball",
+        status: "PASS",
+      },
+    ],
+  },
+  {
     id: 2,
-    code: '1234567890124',
-    name: 'นาย สมชาย สมหญิง',
-    class: '4',
-    course: 'chinese',
+    code: "1234567890124",
+    name: "นาย สมชาย สมหญิง",
+    class: "4",
+    course: "chinese",
     scores: [
-        {
-          listening: 80,
-          reading: 90,
-          writing: 70,
-          total: 240,
-          passing: 160,
-          testLevel: "A",
-          testCalendar: "26/08/2025",
-          notes: "-",
-          savedBy: "Ball",
-          status: "ผ่าน"
-        }
-      ]
-},
-{
+      {
+        listening: 80,
+        reading: 90,
+        writing: 70,
+        total: 240,
+        passing: 160,
+        testLevel: "A",
+        testCalendar: "26/08/2025",
+        notes: "-",
+        savedBy: "Ball",
+        status: "PASS",
+      },
+    ],
+  },
+  {
     id: 3,
-    code: '1234567890125',
-    name: 'นาย ประยุทธ์ สมหญิง',
-    class: '1',
-    course: 'chinese',
+    code: "1234567890125",
+    name: "นาย ประยุทธ์ สมหญิง",
+    class: "1",
+    course: "chinese",
     scores: [
-        {
-          listening: 80,
-          reading: 90,
-          writing: 70,
-          total: 240,
-          passing: 20,
-          testLevel: "A",
-          testCalendar: "26/08/2025",
-          notes: "-",
-          savedBy: "Ball",
-          status: "ผ่าน"
-        }
-      ]
-},
-]
+      {
+        listening: 80,
+        reading: 90,
+        writing: 70,
+        total: 240,
+        passing: 20,
+        testLevel: "A",
+        testCalendar: "26/08/2025",
+        notes: "-",
+        savedBy: "Ball",
+        status: "PASS",
+      },
+    ],
+  },
+  {
+    id: 4,
+    code: "1234567890123",
+    name: "นาย อัศวิน มาพูล",
+    class: "3",
+    course: "chinese",
+    scores: [
+      {
+        listening: 40,
+        reading: 20,
+        writing: 30,
+        total: 90,
+        passing: 10,
+        testLevel: "F",
+        testCalendar: "28/08/2025",
+        notes: "-",
+        savedBy: "Ball",
+        status: "NOT PASS",
+      },
+    ],
+  },
+  {
+    id: 5,
+    code: "1234567890123",
+    name: "นาย อัศวิน มาพูล",
+    class: "3",
+    course: "chinese",
+    scores: [
+      {
+        listening: 50,
+        reading: 70,
+        writing: 60,
+        total: 180,
+        passing: 100,
+        testLevel: "F",
+        testCalendar: "29/08/2025",
+        notes: "-",
+        savedBy: "Ball",
+        status: "NOT PASS",
+      },
+    ],
+  },
+];

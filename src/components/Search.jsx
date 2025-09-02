@@ -68,7 +68,7 @@ function Search() {
         {/* แสดงผลตามที่ค้นเจอ */}
         {foundStudent && foundStudent !== 'notfound' && (
           <>
-            <ShowStudent student={foundStudent} />
+            {/* <ShowStudent student={foundStudent} /> */}
             <TableScore student={foundStudent} />
           </>
         )}

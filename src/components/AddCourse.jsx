@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { validateForm } from "../utils/validatefrom";
 
 function AddCourse() {
   const [code, setCode] = useState("");
@@ -20,11 +21,7 @@ function AddCourse() {
   const handleAddCourse = (e) => {
     e.preventDefault();
 
-    if (validateForm()) {
-      return;
-    }
-
-    let newCourse = {
+    const newCourse = {
       code: code.trim(),
       name: name.trim(),
       classLevel: classLevel.trim(),
@@ -41,57 +38,13 @@ function AddCourse() {
       status: status.trim(),
     }
 
+    if (validateForm(newCourse, setError)) {
+      return;
+    }
+
     alert(JSON.stringify(newCourse,null,2));
   }
 
-  function validateForm() {
-    let newerrors = {};
-
-    if (!code) {
-      newerrors.code = "กรุณากรอกรหัสนักศึกษา";
-    }
-    if (!name) {
-      newerrors.name = "กรุณากรอกชื่อนักศึกษา";
-    }
-    if (!classLevel) {
-      newerrors.classLevel = "กรุณากรอกระดับชั้น";
-    }
-    if (!course) {
-      newerrors.course = "กรุณากรอกรายวิชา";
-    }
-    if (!listening) {
-      newerrors.listening = "กรุณากรอกคะแนน Listening";
-    }
-    if (!reading) {
-      newerrors.reading = "กรุณากรอกคะแนน Reading";
-    }
-    if (!writing) {
-      newerrors.writing = "กรุณากรอกคะแนน Writing";
-    }
-    if (!total) {
-      newerrors.total = "กรุณากรอกคะแนน Total";
-    }
-    if (!passingScore) {
-      newerrors.passingScore = "กรุณากรอกคะแนน Passing Score";
-    }
-    if (!testLevel) {
-      newerrors.testLevel = "กรุณากรอก test level";
-    }
-    if (!testCalendar) {
-      newerrors.testCalendar = "กรุณากรอกวันที่สอบ";
-    }
-    if (!notes) {
-      newerrors.notes = "กรุณากรอกหมายเหตุ";
-    }
-    if (!savedBy) {
-      newerrors.savedBy = "กรุณากรอกชื่อผู้บันทึก";
-    }
-    if (!status) {
-      newerrors.status = "กรุณากรอกสถานะ";
-    }
-    setError(newerrors);
-    return Object.keys(newerrors).length > 0;
-  }
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center items-center p-6">
       <div className="w-full max-w-4xl">

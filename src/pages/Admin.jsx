@@ -1,9 +1,16 @@
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
 import ImportExport from '../components/ImportExport';
 import AddCourse from '../components/AddCourse';
 
 function Admin() {
     const navigate = useNavigate();
+    const { logout, user } = useAuth();
+
+    const handleLogout = async () => {
+        await logout();
+        navigate("/");
+    };
 
     return (
         <div className="min-h-screen flex flex-col justify-center items-center bg-gray-50">
@@ -12,16 +19,17 @@ function Admin() {
                     <h1 className="text-white text-[35px] font-bold text-center ml-65">
                         ระบบแจ้งคะแนนสอบนักเรียน
                     </h1>
-                    <button
-                        className="bg-white text-black px-4 py-2 rounded-md hover:bg-gray-100 transition-colors font-bold"
-                        onClick={() => navigate("/")}
-                    >
-                        Logout
-                    </button>
+                    <div className="flex items-center gap-4">
+                        <span className="text-white">Welcome, {user?.email}</span>
+                        <button
+                            className="bg-white text-black px-4 py-2 rounded-md hover:bg-gray-100 transition-colors font-bold"
+                            onClick={handleLogout}
+                        >
+                            Logout
+                        </button>
+                    </div>
                 </div>
-                {/* <นำเข้า-ส่งออก ข้อมูล /> */}
                 <ImportExport />
-                {/* <เพิ่มวิชา /> */}
                 <AddCourse />
                 <div className="flex flex-row items-center justify-center bg-gray-200 px-6 py-4 rounded-b-lg">
                     <p className="text-gray-500 text-center">

@@ -10,7 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.76.1",
     "@tailwindcss/vite": "^4.1.12",
+    "bcryptjs": "^3.0.2",
     "navigate": "^0.3.6",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",

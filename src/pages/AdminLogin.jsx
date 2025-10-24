@@ -1,22 +1,30 @@
 import { useNavigate } from "react-router-dom";
-import { admin } from "../data/admin";
 import { useState } from "react";
+import { useAuth } from "../hooks/useAuth";
 
 function AdminLogin() {
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = () => {
-    // หา student ที่เลขบัตรตรงกับที่กรอก
-    const foundAdmin = admin.find((a) => a.username === username && a.password === password);
-    if (foundAdmin) {
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+
+    const { user, error: loginError } = await login(username, password);
+    
+    if (loginError) {
+      setError(loginError);
+    } else if (user) {
       navigate("/admin");
-    } else {
-      setError("Username or password is incorrect");
     }
+    
+    setLoading(false);
   };
 
   return (
@@ -42,7 +50,7 @@ function AdminLogin() {
               <h2 className="text-lg font-semibold text-gray-800 mb-4 text-center">
                 Admin Login
               </h2>
-              <div className="space-y-4">
+              <form onSubmit={handleLogin} className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Username
@@ -53,6 +61,7 @@ function AdminLogin() {
                     placeholder="Username"
                     className="w-full border-2 border-gray-300 rounded-md p-3 focus:border-blue-500 focus:outline-none transition-colors"
                     onChange={(e) => setUsername(e.target.value)}
+                    required
                   />
                 </div>
                 <div>
@@ -65,15 +74,18 @@ function AdminLogin() {
                     placeholder="Password"
                     className="w-full border-2 border-gray-300 rounded-md p-3 focus:border-blue-500 focus:outline-none transition-colors"
                     onChange={(e) => setPassword(e.target.value)}
+                    required
                   />
                   {error && <p className="text-red-500 text-sm">{error}</p>}
                 </div>
-                <button className="w-full bg-[#4a90e2] text-white py-3 px-4 rounded-md hover:bg-blue-600 transition-colors font-medium"
-                onClick={handleLogin}
+                <button 
+                  type="submit"
+                  disabled={loading}
+                  className="w-full bg-[#4a90e2] text-white py-3 px-4 rounded-md hover:bg-blue-600 transition-colors font-medium disabled:opacity-50"
                 >
-                  Login
+                  {loading ? "Logging in..." : "Login"}
                 </button>
-              </div>
+              </form>
             </div>
           </div>
         </div>

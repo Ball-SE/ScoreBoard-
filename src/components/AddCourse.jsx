@@ -1,5 +1,8 @@
 import { useState } from "react";
 import { validateForm } from "../utils/validatefrom";
+import { studentService } from '../services/studentService'
+import { examService } from '../services/examService'
+import { supabase } from '../lib/supabase'
 
 function AddCourse() {
   const [code, setCode] = useState("");
@@ -18,31 +21,95 @@ function AddCourse() {
   const [status, setStatus] = useState("");
   const [error, setError] = useState({})
 
-  const handleAddCourse = (e) => {
-    e.preventDefault();
-
+  const handleAddCourse = async (e) => {
+    e.preventDefault()
+  
     const newCourse = {
       code: code.trim(),
       name: name.trim(),
       classLevel: classLevel.trim(),
       course: course.trim(),
-      listening: listening.trim(),
-      reading: reading.trim(),
-      writing: writing.trim(),
-      total: total.trim(),
-      passingScore: passingScore.trim(),
+      listening: parseInt(listening),
+      reading: parseInt(reading),
+      writing: parseInt(writing),
+      total: parseInt(total),
+      passingScore: parseInt(passingScore),
       testLevel: testLevel.trim(),
       testCalendar: testCalendar.trim(),
       notes: notes.trim(),
       savedBy: savedBy.trim(),
       status: status.trim(),
     }
-
+  
     if (validateForm(newCourse, setError)) {
-      return;
+      return
     }
+  
+    try {
+      // ตรวจสอบว่านักเรียนมีอยู่แล้วหรือไม่
+      const existingStudent = await studentService.searchStudents(newCourse.code)
+      
+      let studentId
+      if (existingStudent.length > 0) {
+        studentId = existingStudent[0].id
+      } else {
+        // สร้างนักเรียนใหม่
+        const newStudent = await studentService.addStudent({
+          code: newCourse.code,
+          name: newCourse.name,
+          class: newCourse.classLevel
+        })
+        studentId = newStudent.id
+      }
+  
+      // หา course_id
+      const { data: courses, error: courseError } = await supabase
+      .from('courses')
+      .select('id')
+      .eq('name', newCourse.course)
+      .single()
 
-    alert(JSON.stringify(newCourse,null,2));
+      if (courseError) {
+        throw new Error(`ไม่พบรายวิชา: ${newCourse.course}`)
+      }
+  
+      // บันทึกผลสอบ
+      await examService.addExamResult({
+        student_id: studentId,
+        course_id: courses.id,
+        listening: newCourse.listening,
+        reading: newCourse.reading,
+        writing: newCourse.writing,
+        total: newCourse.total,
+        passing_score: newCourse.passingScore,
+        test_level: newCourse.testLevel,
+        test_calendar: newCourse.testCalendar,
+        notes: newCourse.notes,
+        saved_by: newCourse.savedBy,
+        status: newCourse.status
+      })
+  
+      alert('บันทึกข้อมูลสำเร็จ!')
+      // รีเซ็ตฟอร์ม
+      setCode('')
+      setName('')
+      setClassLevel('')
+      setCourse('')
+      setListening('')
+      setReading('')
+      setWriting('')
+      setTotal('')
+      setPassingScore('')
+      setTestLevel('')
+      setTestCalendar('')
+      setNotes('')
+      setSavedBy('')
+      setStatus('')
+      setError({})
+    } catch (error) {
+      console.error('Error:', error)
+      alert('เกิดข้อผิดพลาด: ' + error.message)
+    }
   }
 
   return (

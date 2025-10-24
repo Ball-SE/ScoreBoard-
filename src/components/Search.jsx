@@ -29,7 +29,7 @@ function Search() {
             ระบบแจ้งคะแนนสอบนักเรียน
           </h1>
           <button className="bg-white text-black px-4 py-2 rounded-md hover:bg-gray-100 transition-colors font-bold"
-          onClick={() => navigate('/adminlogin')}
+          onClick={() => navigate('/admin-login')}
           >
             Admin Login
           </button>

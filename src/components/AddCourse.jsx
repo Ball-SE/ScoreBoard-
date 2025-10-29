@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { validateForm } from "../utils/validatefrom";
 import { studentService } from '../services/studentService'
 import { examService } from '../services/examService'
@@ -9,6 +9,8 @@ function AddCourse() {
   const [name, setName] = useState("");
   const [classLevel, setClassLevel] = useState("");
   const [course, setCourse] = useState("");
+  const [courses, setCourses] = useState([]); // เพิ่ม state สำหรับเก็บรายการ courses
+  const [loadingCourses, setLoadingCourses] = useState(true);
   const [listening, setListening] = useState("");
   const [reading, setReading] = useState("");
   const [writing, setWriting] = useState("");
@@ -20,6 +22,52 @@ function AddCourse() {
   const [savedBy, setSavedBy] = useState("");
   const [status, setStatus] = useState("");
   const [error, setError] = useState({})
+
+  // ดึงข้อมูล courses เมื่อ component โหลด
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('courses')
+          .select('id, name')
+          .order('name', { ascending: true })
+
+        if (error) throw error
+
+        setCourses(data || [])
+      } catch (error) {
+        console.error('Error fetching courses:', error)
+        alert('เกิดข้อผิดพลาดในการโหลดรายการวิชา')
+      } finally {
+        setLoadingCourses(false)
+      }
+    }
+
+    fetchCourses()
+  }, [])
+
+  // คำนวณคะแนนรวมอัตโนมัติจาก Listening + Reading + Writing
+  useEffect(() => {
+    const l = parseInt(listening, 10)
+    const r = parseInt(reading, 10)
+    const w = parseInt(writing, 10)
+
+    const safeL = isNaN(l) ? 0 : l
+    const safeR = isNaN(r) ? 0 : r
+    const safeW = isNaN(w) ? 0 : w
+
+    const sum = safeL + safeR + safeW
+
+    if (
+      (listening === "" || isNaN(l)) &&
+      (reading === "" || isNaN(r)) &&
+      (writing === "" || isNaN(w))
+    ) {
+      setTotal("")
+    } else {
+      setTotal(String(sum))
+    }
+  }, [listening, reading, writing])
 
   const handleAddCourse = async (e) => {
     e.preventDefault()
@@ -62,21 +110,15 @@ function AddCourse() {
         studentId = newStudent.id
       }
   
-      // หา course_id
-      const { data: courses, error: courseError } = await supabase
-      .from('courses')
-      .select('id')
-      .eq('name', newCourse.course)
-      .single()
-
-      if (courseError) {
-        throw new Error(`ไม่พบรายวิชา: ${newCourse.course}`)
+      const courseId = parseInt(newCourse.course)
+      if (!courseId) {
+        throw new Error('กรุณาเลือกรายวิชา')
       }
   
       // บันทึกผลสอบ
       await examService.addExamResult({
         student_id: studentId,
-        course_id: courses.id,
+        course_id: courseId,
         listening: newCourse.listening,
         reading: newCourse.reading,
         writing: newCourse.writing,
@@ -182,12 +224,26 @@ function AddCourse() {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 รายวิชา
               </label>
-              <input
-                type="text"
-                placeholder="กรอกรายวิชา"
-                className="w-full border-2 border-gray-200 rounded-lg p-4 focus:border-blue-500 focus:outline-none transition-all duration-200 hover:border-gray-300"
-                onChange={(e) => setCourse(e.target.value)}
-              />
+              <div className="relative">
+                <select
+                  className="w-full border-2 border-gray-200 rounded-lg p-4 pr-10 focus:border-blue-500 focus:outline-none transition-all duration-200 hover:border-gray-300 appearance-none"
+                  onChange={(e) => setCourse(e.target.value)}
+                  value={course}
+                  disabled={loadingCourses}
+                >
+                  <option value="">{loadingCourses ? 'กำลังโหลด...' : 'เลือกรายวิชา'}</option>
+                  {courses.map((courseItem) => (
+                    <option key={courseItem.id} value={courseItem.id}>
+                      {courseItem.name}
+                    </option>
+                  ))}
+                </select>
+                <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-500">
+                  <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M5.25 7.5l4.75 4.75L14.75 7.5" stroke="currentColor" strokeWidth="1.8" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </span>
+              </div>
               {error.course && <p className="text-red-500 text-sm mt-1">{error.course}</p>}
             </div>
           </div>
@@ -207,10 +263,18 @@ function AddCourse() {
                     Listening (100)
                   </label>
                   <input
-                    type="text"
+                    type="number"
+                    min={0}
+                    max={100}
                     placeholder="กรอกคะแนน Listening"
                     className="flex-1 border-2 bg-white border-gray-200 rounded-lg p-3 focus:border-blue-500 focus:outline-none transition-all duration-200 hover:border-gray-300"
-                    onChange={(e) => setListening(e.target.value)}
+                    value={listening}
+                    onChange={(e) => {
+                      const v = e.target.value;
+                      if (v === "") return setListening("");
+                      const n = Number(v);
+                      setListening(String(Math.max(0, Math.min(100, n))));
+                    }}
                   />
                   {error.listening && <p className="text-red-500 text-sm mt-1">{error.listening}</p>}
                 </div>
@@ -222,10 +286,18 @@ function AddCourse() {
                     Reading (100)
                   </label>
                   <input
-                    type="text"
+                    type="number"
+                    min={0}
+                    max={100}
                     placeholder="กรอกคะแนน Reading"
                     className="flex-1 border-2 bg-white border-gray-200 rounded-lg p-3 focus:border-blue-500 focus:outline-none transition-all duration-200 hover:border-gray-300"
-                    onChange={(e) => setReading(e.target.value)}
+                    value={reading}
+                    onChange={(e) => {
+                      const v = e.target.value;
+                      if (v === "") return setReading("");
+                      const n = Number(v);
+                      setReading(String(Math.max(0, Math.min(100, n))));
+                    }}
                   />
                   {error.reading && <p className="text-red-500 text-sm mt-1">{error.reading}</p>}
                 </div>
@@ -237,10 +309,18 @@ function AddCourse() {
                     Writing (100)
                   </label>
                   <input
-                    type="text"
+                    type="number"
+                    min={0}
+                    max={100}
                     placeholder="กรอกคะแนน Writing"
                     className="flex-1 border-2 bg-white border-gray-200 rounded-lg p-3 focus:border-blue-500 focus:outline-none transition-all duration-200 hover:border-gray-300"
-                    onChange={(e) => setWriting(e.target.value)}
+                    value={writing}
+                    onChange={(e) => {
+                      const v = e.target.value;
+                      if (v === "") return setWriting("");
+                      const n = Number(v);
+                      setWriting(String(Math.max(0, Math.min(100, n))));
+                    }}
                   />
                   {error.writing && <p className="text-red-500 text-sm mt-1">{error.writing}</p>}
                 </div>
@@ -255,7 +335,8 @@ function AddCourse() {
                     type="text"
                     placeholder="กรอกคะแนนรวม"
                     className="flex-1 border-2 bg-white border-gray-200 rounded-lg p-3 focus:border-blue-500 focus:outline-none transition-all duration-200 hover:border-gray-300"
-                    onChange={(e) => setTotal(e.target.value)}
+                    value={total}
+                    readOnly
                   />
                   {error.total && <p className="text-red-500 text-sm mt-1">{error.total}</p>}
                 </div>
@@ -267,10 +348,18 @@ function AddCourse() {
                     Passing Score (180)
                   </label>
                   <input
-                    type="text"
+                    type="number"
+                    min={0}
+                    max={180}
                     placeholder="กรอกคะแนนผ่าน"
                     className="flex-1 border-2 bg-white border-gray-200 rounded-lg p-3 focus:border-blue-500 focus:outline-none transition-all duration-200 hover:border-gray-300"
-                    onChange={(e) => setPassingScore(e.target.value)}
+                    value={passingScore}
+                    onChange={(e) => {
+                      const v = e.target.value;
+                      if (v === "") return setPassingScore("");
+                      const n = Number(v);
+                      setPassingScore(String(Math.max(0, Math.min(180, n))));
+                    }}
                   />
                   {error.passingScore && <p className="text-red-500 text-sm mt-1">{error.passingScore}</p>}
                 </div>
@@ -341,12 +430,22 @@ function AddCourse() {
                     <span className="w-3 h-3 bg-blue-400 rounded-full mr-2"></span>
                     Status
                   </label>
-                  <input
-                    type="text"
-                    placeholder="ผ่าน/ไม่ผ่าน"
-                    className="flex-1 border-2 bg-white border-gray-200 rounded-lg p-3 focus:border-blue-500 focus:outline-none transition-all duration-200 hover:border-gray-300"
-                    onChange={(e) => setStatus(e.target.value)}
-                  />
+                  <div className="relative flex-1">
+                    <select
+                      className="w-full border-2 bg-white border-gray-200 rounded-lg p-3 pr-10 focus:border-blue-500 focus:outline-none transition-all duration-200 hover:border-gray-300 appearance-none"
+                      onChange={(e) => setStatus(e.target.value)}
+                      value={status}
+                    >
+                      <option value="">เลือกสถานะ</option>
+                      <option value="PASS">ผ่าน</option>
+                      <option value="NOT PASS">ไม่ผ่าน</option>
+                    </select>
+                    <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-500">
+                      <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M5.25 7.5l4.75 4.75L14.75 7.5" stroke="currentColor" strokeWidth="1.8" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    </span>
+                  </div>
                   {error.status && <p className="text-red-500 text-sm">{error.status}</p>}
                 </div>
               </div>

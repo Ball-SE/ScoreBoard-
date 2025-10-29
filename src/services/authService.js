@@ -1,8 +1,7 @@
 import { supabase } from '../lib/supabase'
-import bcrypt from 'bcryptjs'
 
 export const authService = {
-  // Login ด้วย username และ password จากตาราง admins
+  // Login ด้วย Supabase Auth
   async login(username, password) {
     try {
       // ค้นหา admin จากตาราง admins
@@ -11,47 +10,44 @@ export const authService = {
         .select('*')
         .eq('username', username)
         .single()
-  
-      if (error) {
-        console.error('Supabase error:', error)
-        throw new Error(`Database error: ${error.message}`)
-      }
-  
-      if (!admin) {
+
+      if (error || !admin) {
         throw new Error('Admin not found')
       }
-  
+
       // ตรวจสอบ password
       let isValidPassword = false
       
       if (admin.password_hash) {
-        // ตรวจสอบว่าเป็น bcrypt hash หรือ plain text
         if (admin.password_hash.startsWith('$2b$') || admin.password_hash.startsWith('$2a$')) {
-          // ถ้าเป็น bcrypt hash ใช้ bcrypt.compare()
-          console.log('Using bcrypt comparison')
+          const bcrypt = await import('bcryptjs')
           isValidPassword = await bcrypt.compare(password, admin.password_hash)
         } else {
-          // ถ้าเป็น plain text เปรียบเทียบตรงๆ
-          console.log('Using direct comparison for plain text')
           isValidPassword = (admin.password_hash === password)
         }
       } else {
-        // ถ้าไม่มี password_hash ให้เปรียบเทียบตรงๆ
-        console.log('Using direct comparison')
         isValidPassword = (admin.password === password)
       }
-  
+
       if (!isValidPassword) {
         throw new Error('Invalid password')
       }
-  
-      // สร้าง user object สำหรับ context
-      return {
-        user: {
-          id: admin.id,
-          username: admin.username,
-          email: admin.username
+
+      // ถ้า admin มี user_id ให้ sign in ด้วย Supabase Auth
+      if (admin.user_id) {
+        // ใช้ email/password ของ Supabase Auth
+        const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+          email: admin.username, // หรือ email ถ้ามี
+          password: password // หรือใช้ password แยกต่างหาก
+        })
+
+        if (authError) {
+          throw new Error('Authentication failed')
         }
+
+        return authData
+      } else {
+        throw new Error('Admin not linked to Supabase Auth')
       }
     } catch (error) {
       console.error('Login error:', error)
@@ -59,44 +55,20 @@ export const authService = {
     }
   },
 
-  // Logout - ลบข้อมูลจาก localStorage
+  // Logout
   async logout() {
-    localStorage.removeItem('admin_user')
-    return { error: null }
+    const { error } = await supabase.auth.signOut()
+    return { error }
   },
 
-  // ตรวจสอบสถานะการ login จาก localStorage
+  // ตรวจสอบสถานะการ login
   async getCurrentUser() {
-    const user = localStorage.getItem('admin_user')
-    return user ? JSON.parse(user) : null
+    const { data: { user } } = await supabase.auth.getUser()
+    return user
   },
 
-  // ฟังการเปลี่ยนแปลงสถานะ auth (ใช้ localStorage)
+  // ฟังการเปลี่ยนแปลงสถานะ auth
   onAuthStateChange(callback) {
-    // ตรวจสอบ localStorage เมื่อโหลดหน้า
-    const user = localStorage.getItem('admin_user')
-    if (user) {
-      callback('SIGNED_IN', { user: JSON.parse(user) })
-    } else {
-      callback('SIGNED_OUT', null)
-    }
-
-    // ฟังการเปลี่ยนแปลง localStorage
-    const handleStorageChange = (e) => {
-      if (e.key === 'admin_user') {
-        const user = e.newValue ? JSON.parse(e.newValue) : null
-        callback(user ? 'SIGNED_IN' : 'SIGNED_OUT', user ? { user } : null)
-      }
-    }
-
-    window.addEventListener('storage', handleStorageChange)
-
-    return {
-      data: {
-        subscription: {
-          unsubscribe: () => window.removeEventListener('storage', handleStorageChange)
-        }
-      }
-    }
+    return supabase.auth.onAuthStateChange(callback)
   }
 }

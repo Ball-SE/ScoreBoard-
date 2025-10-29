@@ -1,8 +1,13 @@
 function TableScore({student}) {
+  // สร้างแถวข้อมูลแบบ flatten เพื่อ map ได้ง่ายและมี index ต่อเนื่อง
+  const rows = student.flatMap(s => 
+    (s.scores || []).map(score => ({ s, score }))
+  );
+  const totalResults = rows.length;
 
   return (
     <div className="flex flex-col justify-center items-center p-6">
-      <div className="w-full max-w-4xl">
+      <div className="w-full max-w-6xl">
         <div className="bg-white rounded-lg shadow-md p-6">
           {/* Main Content 3: ตารางคะแนน*/}
           <h2 className="text-xl font-semibold text-gray-800 mb-6 text-center">
@@ -56,50 +61,52 @@ function TableScore({student}) {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
-                {student.map((student, index) => (
-                <tr key={student.id} className="hover:bg-gray-50 transition-colors duration-200">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    {index + 1}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                    {student.code}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                    {student.name}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                    {student.scores[0]?.listening || '-'}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                    {student.scores[0]?.reading || '-'}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                    {student.scores[0]?.writing || '-'}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                    {student.scores[0]?.total || '-'}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                    {student.scores[0]?.passing || '-'}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                    {student.scores[0]?.testLevel || '-'}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                    {student.scores[0]?.testCalendar || '-'}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                    {student.scores[0]?.notes || '-'}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                    {student.scores[0]?.savedBy || '-'}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                      {student.scores[0]?.status || '-'}
-                    </span>
-                  </td>
-                </tr>
+                {rows.map((row, index) => (
+                  <tr key={`${row.s.id}-${index}`} className="hover:bg-gray-50 transition-colors duration-200">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      {index + 1}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                      {row.s.code}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                      {row.s.name}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                      {row.score.listening || '-'}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                      {row.score.reading || '-'}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                      {row.score.writing || '-'}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                      {row.score.total || '-'}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                      {row.score.passing || '-'}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                      {row.score.testLevel || '-'}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                      {row.score.testCalendar || '-'}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                      {row.score.notes || '-'}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                      {row.score.savedBy || '-'}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                        row.score.status === 'PASS' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                      }`}>
+                        {row.score.status || '-'}
+                      </span>
+                    </td>
+                  </tr>
                 ))}
               </tbody>
             </table>
@@ -108,7 +115,7 @@ function TableScore({student}) {
           {/* Table Footer */}
           <div className="mt-6 flex justify-between items-center text-sm text-gray-600">
             <div className="flex items-center space-x-4">
-              <span>แสดง 5 รายการ จาก 5 รายการ</span>
+              <span>แสดง {totalResults} รายการ จาก {totalResults} รายการ</span>
             </div>
             <div className="flex items-center space-x-2">
               <button className="px-3 py-1 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors">

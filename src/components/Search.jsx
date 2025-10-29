@@ -1,22 +1,76 @@
 import TableScore from './TableScore';
 import ShowStudent from './ShowStudent';
 import { useState } from 'react';
-import { students } from '../data/students';
 import { useNavigate } from 'react-router-dom';
+import { supabase } from '../lib/supabase';
 
 function Search() {
   const [search, setSearch] = useState('');
   const [foundStudent, setFoundStudent] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
 
-  const handleSearch = () => {
-    // หา student ที่เลขบัตรตรงกับที่กรอก (หาได้หลายคน)
-    const foundStudents = students.filter((s) => s.code === search.trim());
-    if (foundStudents.length > 0) {
-      setFoundStudent(foundStudents);
-    } else {
-      setFoundStudent('notfound');
+  const handleSearch = async () => {
+    if (!search.trim()) return;
+    
+    setLoading(true);
+    try {
+      // ค้นหานักเรียนที่มี code ตรงกับที่กรอก
+      const { data: students, error: studentError } = await supabase
+        .from('students')
+        .select('*')
+        .eq('code', search.trim());
+      
+      if (studentError) throw studentError;
+      
+      if (students.length > 0) {
+        // ดึงผลสอบของนักเรียนเหล่านี้
+        const studentIds = students.map(s => s.id);
+        const { data: examResults, error: examError } = await supabase
+          .from('exam_results')
+          .select(`
+            *,
+            students(name, code, class),
+            courses(name)
+          `)
+          .in('student_id', studentIds)
+          .order('test_calendar', { ascending: false });
+        
+        if (examError) throw examError;
+        
+        // จัดรูปแบบข้อมูลให้เหมือนกับโครงสร้างเดิมที่ TableScore ใช้
+        const formattedData = students.map(student => {
+          const studentExams = examResults.filter(exam => exam.student_id === student.id);
+          return {
+            id: student.id,
+            code: student.code,
+            name: student.name,
+            class: student.class,
+            scores: studentExams.map(exam => ({
+              listening: exam.listening,
+              reading: exam.reading,
+              writing: exam.writing,
+              total: exam.total,
+              passing: exam.passing_score,
+              testLevel: exam.test_level,
+              testCalendar: exam.test_calendar,
+              notes: exam.notes,
+              savedBy: exam.saved_by,
+              status: exam.status
+            }))
+          };
+        });
+        
+        setFoundStudent(formattedData);
+      } else {
+        setFoundStudent('notfound');
+      }
+    } catch (error) {
+      console.error('Error searching students:', error);
+      setFoundStudent('error');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -53,12 +107,15 @@ function Search() {
                     className="w-full border-2 border-gray-300 rounded-md p-3 focus:border-blue-500 focus:outline-none transition-colors"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                   />
                 </div>
-                <button className="w-full bg-[#4a90e2] text-white py-3 px-4 rounded-md hover:bg-blue-600 transition-colors font-medium"
-                onClick={handleSearch}
+                <button 
+                  className="w-full bg-[#4a90e2] text-white py-3 px-4 rounded-md hover:bg-blue-600 transition-colors font-medium disabled:opacity-50"
+                  onClick={handleSearch}
+                  disabled={loading}
                 >
-                  ค้นหา
+                  {loading ? 'กำลังค้นหา...' : 'ค้นหา'}
                 </button>
               </div>
             </div>
@@ -66,15 +123,19 @@ function Search() {
         </div>
 
         {/* แสดงผลตามที่ค้นเจอ */}
-        {foundStudent && foundStudent !== 'notfound' && (
+        {foundStudent && foundStudent !== 'notfound' && foundStudent !== 'error' && (
           <>
-            {/* <ShowStudent student={foundStudent} /> */}
             <TableScore student={foundStudent} />
           </>
         )}
         {foundStudent === 'notfound' && (
           <div className="text-center text-red-500 font-bold mb-6">
             ไม่พบรหัสนักศึกษาในระบบ กรุณาตรวจสอบรหัสนักศึกษา
+          </div>
+        )}
+        {foundStudent === 'error' && (
+          <div className="text-center text-red-500 font-bold mb-6">
+            เกิดข้อผิดพลาดในการค้นหา กรุณาลองใหม่อีกครั้ง
           </div>
         )}
 

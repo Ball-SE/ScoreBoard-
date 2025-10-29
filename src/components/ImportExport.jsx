@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import * as XLSX from 'xlsx';
 
 function ImportExport() {
   const [selectedFile, setSelectedFile] = useState(null);
@@ -14,17 +15,12 @@ function ImportExport() {
   };
 
   const handleExportTemplate = () => {
-    // Create CSV template content
-    const templateContent = 'ชื่อ,นามสกุล,รหัสนักเรียน,ชั้น,ห้อง,วิชา,คะแนน\n';
-    const blob = new Blob([templateContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-    link.setAttribute('href', url);
-    link.setAttribute('download', 'student_template.csv');
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    // สร้างไฟล์ Excel (.xlsx) ที่มีเฉพาะ header ให้ผู้ใช้กรอกข้อมูลต่อ
+    const header = [['ชื่อ','นามสกุล','รหัสนักเรียน','ชั้น','ห้อง','วิชา','คะแนน']];
+    const worksheet = XLSX.utils.aoa_to_sheet(header);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'student_template');
+    XLSX.writeFile(workbook, 'student_template.xlsx');
   };
 
   const handleImport = () => {
@@ -33,14 +29,37 @@ function ImportExport() {
       return;
     }
     
+    const isExcel = /\.(xlsx|xls)$/i.test(selectedFile.name);
     const reader = new FileReader();
     reader.onload = (e) => {
-      const csvContent = e.target.result;
-      // Here you would process the CSV content
-      console.log('CSV Content:', csvContent);
-      alert('นำเข้าข้อมูลสำเร็จ');
+      try {
+        if (isExcel) {
+          const data = new Uint8Array(e.target.result);
+          const workbook = XLSX.read(data, { type: 'array' });
+          const firstSheet = workbook.SheetNames[0];
+          const worksheet = workbook.Sheets[firstSheet];
+          const rows = XLSX.utils.sheet_to_json(worksheet, { defval: '' });
+          console.log('Excel rows:', rows);
+        } else {
+          // รองรับ .csv ด้วยการให้ xlsx แปลงจาก string เช่นกัน
+          const text = e.target.result;
+          const workbook = XLSX.read(text, { type: 'string' });
+          const firstSheet = workbook.SheetNames[0];
+          const worksheet = workbook.Sheets[firstSheet];
+          const rows = XLSX.utils.sheet_to_json(worksheet, { defval: '' });
+          console.log('CSV rows:', rows);
+        }
+        alert('นำเข้าข้อมูลสำเร็จ');
+      } catch (err) {
+        console.error(err);
+        alert('รูปแบบไฟล์ไม่ถูกต้อง หรืออ่านไฟล์ไม่สำเร็จ');
+      }
     };
-    reader.readAsText(selectedFile);
+    if (isExcel) {
+      reader.readAsArrayBuffer(selectedFile);
+    } else {
+      reader.readAsText(selectedFile, 'utf-8');
+    }
   };
 
   const handleFileButtonClick = () => {
@@ -57,13 +76,12 @@ function ImportExport() {
           <div className="bg-blue-200 border-2 border-dashed border-blue-500 rounded-lg p-4">
             <h1 className="font-bold text-lg">นำเข้า-ส่งออก ข้อมูล</h1>
             <p>
-              คุณสามารถเพิ่ม/อัปเดตข้อมูลนักเรียนจำนวนมากได้อย่างรวดเร็วโดยใช้ไฟล์
-              csv
+              คุณสามารถเพิ่ม/อัปเดตข้อมูลนักเรียนจำนวนมากได้อย่างรวดเร็วโดยใช้ไฟล์ Excel (.xlsx) หรือ CSV
             </p>
             <ol>
               <li>
                 1. <span className="font-bold">ดาวน์โหลด Template: </span>
-                กดปุ่ม "Export Template" เพื่อรับไฟล์ CSV ที่มีหัวตารางถูกต้อง
+                กดปุ่ม "Export Template" เพื่อรับไฟล์ Excel ที่มีหัวตารางถูกต้อง
               </li>
               <li>
                 2. <span className="font-bold">กรอกข้อมูล: </span>
@@ -93,7 +111,7 @@ function ImportExport() {
               <input
                 ref={fileInputRef}
                 type="file"
-                accept=".csv"
+                accept=".xlsx,.xls,.csv"
                 onChange={handleFileSelect}
                 style={{ display: 'none' }}
               />

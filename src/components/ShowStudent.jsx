@@ -22,11 +22,15 @@ function ShowStudent({student}) {
               Name : {student.name}
             </p>
             <p className="text-gray-500 text-center">Class : {student.class}</p>
-            <p className="text-gray-500 text-center">Subject : {student.course}</p>
+            {/* ถ้าต้องการแสดง course จาก exam_results */}
+            <p className="text-gray-500 text-center">
+              Total Exams : {student.scores.length}
+            </p>
           </div>
         </div>
       ))}
     </div>
   );
 }
+
 export default ShowStudent;

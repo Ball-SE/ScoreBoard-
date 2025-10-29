@@ -17,7 +17,7 @@ export function validateForm(newCourse, setError) {
     }
 
     if (!newCourse.course) {
-      newerrors.course = "กรุณากรอกรายวิชา";
+      newerrors.course = "กรุณาเลือกรายวิชา";
     }
 
     // Score validation
@@ -81,7 +81,7 @@ export function validateForm(newCourse, setError) {
 
     if (!newCourse.status) {
       newerrors.status = "กรุณากรอกสถานะ";
-    } else if (!['ผ่าน', 'ไม่ผ่าน'].includes(newCourse.status)) {
+    } else if (!['PASS', 'NOT PASS', 'ผ่าน', 'ไม่ผ่าน'].includes(newCourse.status)) {
       newerrors.status = "สถานะต้องเป็น 'ผ่าน' หรือ 'ไม่ผ่าน' เท่านั้น";
     }
 

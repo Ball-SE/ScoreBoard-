@@ -1,11 +1,16 @@
 import { useState, useEffect } from "react";
+import { useParams, useNavigate } from 'react-router-dom';
 import { validateForm } from "../utils/validatefrom";
 import { studentService } from '../services/studentService'
 import { examService } from '../services/examService'
 import { courseService } from '../services/courseService'
 import Toast from './Toast'
 
-function AddCourse() {
+function EditCourse() {
+  const navigate = useNavigate();
+  const params = useParams();
+  const examIdProp = params.examId || undefined;
+  const [, setLoadingInitial] = useState(true);
   const [code, setCode] = useState("");
   const [name, setName] = useState("");
   const [classLevel, setClassLevel] = useState("");
@@ -45,31 +50,61 @@ function AddCourse() {
     return () => { mounted = false }
   }, [])
 
-  // เติมค่าฟอร์มจากไฟล์ที่นำเข้า (ถ้ามี)
+  // เติมค่าฟอร์มจากไฟล์ที่นำเข้า (ถ้ามี) หรือจากแถวที่ต้องการแก้ไข
   useEffect(() => {
     const draftStr = localStorage.getItem('addCourseDraft')
-    if (!draftStr) return
-    try {
-      const d = JSON.parse(draftStr)
-      setCode(d.code || '')
-      setName(d.name || '')
-      setClassLevel(d.classLevel || '')
-      setCourse(d.course || '')
-      setListening(d.listening !== undefined ? String(d.listening) : '')
-      setReading(d.reading !== undefined ? String(d.reading) : '')
-      setWriting(d.writing !== undefined ? String(d.writing) : '')
-      setTotal(d.total !== undefined ? String(d.total) : '')
-      setPassingScore(d.passingScore !== undefined ? String(d.passingScore) : '')
-      setTestLevel(d.testLevel || '')
-      setTestCalendar(d.testCalendar || '')
-      setNotes(d.notes || '')
-      setSavedBy(d.savedBy || '')
-      setStatus(d.status || '')
-    } catch (e) {
-      console.error(e)
+    if (draftStr) {
+      try {
+        const d = JSON.parse(draftStr)
+        setCode(d.code || '')
+        setName(d.name || '')
+        setClassLevel(d.classLevel || '')
+        setCourse(d.course || '')
+        setListening(d.listening !== undefined ? String(d.listening) : '')
+        setReading(d.reading !== undefined ? String(d.reading) : '')
+        setWriting(d.writing !== undefined ? String(d.writing) : '')
+        setTotal(d.total !== undefined ? String(d.total) : '')
+        setPassingScore(d.passingScore !== undefined ? String(d.passingScore) : '')
+        setTestLevel(d.testLevel || '')
+        setTestCalendar(d.testCalendar || '')
+        setNotes(d.notes || '')
+        setSavedBy(d.savedBy || '')
+        setStatus(d.status || '')
+      } catch (e) {
+        console.error(e)
+      }
+      localStorage.removeItem('addCourseDraft')
+      setLoadingInitial(false)
+      return
     }
-    localStorage.removeItem('addCourseDraft')
-  }, [])
+
+    // ถ้ามีพารามิเตอร์ examId ให้โหลดข้อมูลจากฐานข้อมูล
+    const loadFromExam = async () => {
+      if (!examIdProp) { setLoadingInitial(false); return }
+      try {
+        const row = await examService.getExamById(examIdProp)
+        setCode(row.students?.code || '')
+        setName(row.students?.name || '')
+        setClassLevel(row.students?.class || '')
+        setCourse(row.course_id ? String(row.course_id) : '')
+        setListening(row.listening !== undefined ? String(row.listening) : '')
+        setReading(row.reading !== undefined ? String(row.reading) : '')
+        setWriting(row.writing !== undefined ? String(row.writing) : '')
+        setTotal(row.total !== undefined ? String(row.total) : '')
+        setPassingScore(row.passing_score !== undefined ? String(row.passing_score) : '')
+        setTestLevel(row.test_level || '')
+        setTestCalendar(row.test_calendar || '')
+        setNotes(row.notes || '')
+        setSavedBy(row.saved_by || '')
+        setStatus(row.status || '')
+      } catch (e) {
+        console.error('load exam error', e)
+      } finally {
+        setLoadingInitial(false)
+      }
+    }
+    loadFromExam()
+  }, [examIdProp])
 
   // คำนวณคะแนนรวมอัตโนมัติจาก Listening + Reading + Writing
   useEffect(() => {
@@ -140,23 +175,44 @@ function AddCourse() {
         throw new Error('กรุณาเลือกรายวิชา')
       }
   
-      // บันทึกผลสอบ
-      await examService.addExamResult({
-        student_id: studentId,
-        course_id: courseId,
-        listening: newCourse.listening,
-        reading: newCourse.reading,
-        writing: newCourse.writing,
-        total: newCourse.total,
-        passing_score: newCourse.passingScore,
-        test_level: newCourse.testLevel,
-        test_calendar: newCourse.testCalendar,
-        notes: newCourse.notes,
-        saved_by: newCourse.savedBy,
-        status: newCourse.status
-      })
+      if (examIdProp) {
+        // อัปเดตผลสอบเดิม
+        await examService.updateExamResult(examIdProp, {
+          course_id: courseId,
+          listening: newCourse.listening,
+          reading: newCourse.reading,
+          writing: newCourse.writing,
+          total: newCourse.total,
+          passing_score: newCourse.passingScore,
+          test_level: newCourse.testLevel,
+          test_calendar: newCourse.testCalendar,
+          notes: newCourse.notes,
+          saved_by: newCourse.savedBy,
+          status: newCourse.status
+        })
+      } else {
+        // บันทึกผลสอบใหม่
+        await examService.addExamResult({
+          student_id: studentId,
+          course_id: courseId,
+          listening: newCourse.listening,
+          reading: newCourse.reading,
+          writing: newCourse.writing,
+          total: newCourse.total,
+          passing_score: newCourse.passingScore,
+          test_level: newCourse.testLevel,
+          test_calendar: newCourse.testCalendar,
+          notes: newCourse.notes,
+          saved_by: newCourse.savedBy,
+          status: newCourse.status
+        })
+      }
   
       showToast('success', 'บันทึกข้อมูลสำเร็จ!')
+      if (examIdProp) {
+        setTimeout(() => navigate('/admin/edit/all'), 500)
+        return
+      }
       // รีเซ็ตฟอร์ม
       setCode('')
       setName('')
@@ -186,7 +242,7 @@ function AddCourse() {
           {/* Header */}
           <div className="text-center mb-8">
             <h2 className="text-2xl font-bold text-gray-800 mb-2">
-              เพิ่มข้อมูลรายวิชา
+              {examIdProp ? 'แก้ไขข้อมูลรายวิชา' : 'เพิ่มข้อมูลรายวิชา'}
             </h2>
             <p className="text-gray-600">กรอกข้อมูลนักเรียนและรายวิชา</p>
           </div>
@@ -206,6 +262,7 @@ function AddCourse() {
                   type="text"
                   placeholder="กรอกรหัสประจำตัวประชาชน"
                   className="w-full border-2 border-gray-200 rounded-lg p-4 focus:border-blue-500 focus:outline-none transition-all duration-200 hover:border-gray-300"
+                  value={code}
                   onChange={(e) => setCode(e.target.value)}
                 />
                 {error.code && <p className="text-red-500 text-sm mt-1">{error.code}</p>}
@@ -219,6 +276,7 @@ function AddCourse() {
                   type="text"
                   placeholder="กรอกชื่อ-นามสกุล"
                   className="w-full border-2 border-gray-200 rounded-lg p-4 focus:border-blue-500 focus:outline-none transition-all duration-200 hover:border-gray-300"
+                  value={name}
                   onChange={(e) => setName(e.target.value)}
                 />
                 {error.name && <p className="text-red-500 text-sm mt-1">{error.name}</p>}
@@ -232,6 +290,7 @@ function AddCourse() {
                   type="text"
                   placeholder="กรอกระดับชั้น"
                   className="w-full border-2 border-gray-200 rounded-lg p-4 focus:border-blue-500 focus:outline-none transition-all duration-200 hover:border-gray-300"
+                  value={classLevel}
                   onChange={(e) => setClassLevel(e.target.value)}
                 />
                 {error.classLevel && <p className="text-red-500 text-sm mt-1">{error.classLevel}</p>}
@@ -399,6 +458,7 @@ function AddCourse() {
                     type="text"
                     placeholder="Input Text"
                     className="flex-1 border-2 bg-white border-gray-200 rounded-lg p-3 focus:border-blue-500 focus:outline-none transition-all duration-200 hover:border-gray-300"
+                    value={testLevel}
                     onChange={(e) => setTestLevel(e.target.value)}
                   />
                   {error.testLevel && <p className="text-red-500 text-sm">{error.testLevel}</p>}
@@ -414,6 +474,7 @@ function AddCourse() {
                     type="date"
                     placeholder="วัน/เดือน/ปี"
                     className="flex-1 border-2 bg-white border-gray-200 rounded-lg p-3 focus:border-blue-500 focus:outline-none transition-all duration-200 hover:border-gray-300"
+                    value={testCalendar}
                     onChange={(e) => setTestCalendar(e.target.value)}
                   />
                   {error.testCalendar && <p className="text-red-500 text-sm">{error.testCalendar}</p>}
@@ -429,6 +490,7 @@ function AddCourse() {
                     type="text"
                     placeholder="Input Text"
                     className="flex-1 border-2 bg-white border-gray-200 rounded-lg p-3 focus:border-blue-500 focus:outline-none transition-all duration-200 hover:border-gray-300"
+                    value={notes}
                     onChange={(e) => setNotes(e.target.value)}
                   />
                   {error.notes && <p className="text-red-500 text-sm">{error.notes}</p>}
@@ -444,6 +506,7 @@ function AddCourse() {
                     type="text"
                     placeholder="Input Text"
                     className="flex-1 border-2 bg-white border-gray-200 rounded-lg p-3 focus:border-blue-500 focus:outline-none transition-all duration-200 hover:border-gray-300"
+                    value={savedBy}
                     onChange={(e) => setSavedBy(e.target.value)}
                   />
                   {error.savedBy && <p className="text-red-500 text-sm">{error.savedBy}</p>}
@@ -480,7 +543,7 @@ function AddCourse() {
           {/* Submit Button */}
           <div className="text-center">
             <button className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white py-4 px-6 rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 font-semibold text-lg shadow-md hover:shadow-lg transform hover:-translate-y-0.5" >
-              เพิ่มคะแนน
+              {examIdProp ? 'บันทึกการแก้ไข' : 'เพิ่มคะแนน'}
             </button>
           </div>
         </form>
@@ -495,4 +558,4 @@ function AddCourse() {
   );
 }
 
-export default AddCourse;
+export default EditCourse;

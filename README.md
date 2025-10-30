@@ -1,12 +1,47 @@
-# React + Vite
+# Exam Result Notification System
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A lightweight React + Vite app for searching and managing student exam results with Supabase as the backend.
 
-Currently, two official plugins are available:
+## Deployed Website
+You can check the project at : [https://merry-match-nine.vercel.app/](https://score-board-amber.vercel.app/)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### Landing Page
+![แจ้งคะแนน](https://github.com/user-attachments/assets/92528dff-97b8-4884-ace2-c44908151a51)
 
-## Expanding the ESLint configuration
+## ✨ Features
+- Search results by 13-digit student code
+- Scores table with pagination: Listening, Reading, Writing, Total, Passing Score, Test Level, Test Calendar, Notes, Saved By, Status
+- Admin portal: login, import Excel/CSV template, auto-fill form, add exam results
+- Supabase database integration: students, courses, exam_results, admins
+- Tailwind CSS UI
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## 🧱 Tech Stack
+- React 19, Vite
+- React Router DOM
+- Tailwind CSS 4
+- Supabase (Auth + PostgreSQL)
+- xlsx (Excel), file-saver
+- bcryptjs (admin password checks)
+
+
+## 🗂️ Project Structure
+src/
+├─ App.jsx
+├─ main.jsx
+├─ components/
+│  ├─ Search.jsx            # public search
+│  ├─ TableScore.jsx        # results table + pagination
+│  ├─ ImportExport.jsx      # Excel/CSV import + template export
+│  └─ AddCourse.jsx         # add exam result form
+├─ pages/
+│  ├─ Admin.jsx             # admin home
+│  ├─ AdminLogin.jsx        # admin login
+│  └─ AdminEdit.jsx         # admin edit (optional)
+├─ contexts/
+│  └─ AuthContext.jsx       # auth provider
+├─ services/
+│  ├─ authService.js
+│  ├─ studentService.js
+│  ├─ courseService.js
+│  └─ examService.js
+└─ lib/supabase.js          # Supabase client

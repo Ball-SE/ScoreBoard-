@@ -1,9 +1,27 @@
+import React, { useMemo, useState } from 'react';
+import Pagination from './Pagination';
+
 function TableScore({student}) {
   // สร้างแถวข้อมูลแบบ flatten เพื่อ map ได้ง่ายและมี index ต่อเนื่อง
   const rows = student.flatMap(s => 
     (s.scores || []).map(score => ({ s, score }))
   );
+
+  // Pagination
+  const pageSize = 5; // แสดงไม่เกิน 5 รายการต่อหน้า
+  const [currentPage, setCurrentPage] = useState(1);
   const totalResults = rows.length;
+  const totalPages = Math.max(1, Math.ceil(totalResults / pageSize));
+
+  const pagedRows = useMemo(() => {
+    const start = (currentPage - 1) * pageSize;
+    return rows.slice(start, start + pageSize);
+  }, [rows, currentPage]);
+
+  // รีเซ็ตหน้าเมื่อจำนวนแถวเปลี่ยนจนหน้าเกินขอบเขต
+  if (currentPage > totalPages) {
+    setCurrentPage(1);
+  }
 
   return (
     <div className="flex flex-col justify-center items-center p-6">
@@ -61,10 +79,10 @@ function TableScore({student}) {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
-                {rows.map((row, index) => (
+                {pagedRows.map((row, index) => (
                   <tr key={`${row.s.id}-${index}`} className="hover:bg-gray-50 transition-colors duration-200">
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      {index + 1}
+                      {(currentPage - 1) * pageSize + index + 1}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                       {row.s.code}
@@ -113,24 +131,13 @@ function TableScore({student}) {
           </div>
 
           {/* Table Footer */}
-          <div className="mt-6 flex justify-between items-center text-sm text-gray-600">
-            <div className="flex items-center space-x-4">
-              <span>แสดง {totalResults} รายการ จาก {totalResults} รายการ</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <button className="px-3 py-1 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors">
-                ก่อนหน้า
-              </button>
-              <button className="px-3 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors">
-                1
-              </button>
-              <button className="px-3 py-1 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors">
-                2
-              </button>
-              <button className="px-3 py-1 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors">
-                ถัดไป
-              </button>
-            </div>
+          <div className="mt-6 flex justify-end items-center text-sm text-gray-600">
+            <Pagination
+              currentPage={currentPage}
+              totalItems={totalResults}
+              pageSize={pageSize}
+              onPageChange={setCurrentPage}
+            />
           </div>
         </div>
       </div>

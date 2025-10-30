@@ -1,5 +1,4 @@
 import TableScore from './TableScore';
-import ShowStudent from './ShowStudent';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';

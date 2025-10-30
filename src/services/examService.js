@@ -58,5 +58,45 @@ export const examService = {
     
     if (error) throw error
     return data
+  },
+
+  // ดึงผลสอบตาม id
+  async getExamById(id) {
+    const { data, error } = await supabase
+      .from('exam_results')
+      .select(`
+        *,
+        students(name, code, class),
+        courses(name)
+      `)
+      .eq('id', id)
+      .single()
+    if (error) throw error
+    return data
+  },
+
+  // อัปเดตผลสอบ
+  async updateExamResult(id, payload) {
+    const { data, error } = await supabase
+      .from('exam_results')
+      .update(payload)
+      .eq('id', id)
+      .select(`
+        *,
+        students(name, code, class),
+        courses(name)
+      `)
+    if (error) throw error
+    return data?.[0]
+  },
+
+  // ลบผลสอบตาม id
+  async deleteExamResult(id) {
+    const { error } = await supabase
+      .from('exam_results')
+      .delete()
+      .eq('id', id)
+    if (error) throw error
+    return true
   }
 }
